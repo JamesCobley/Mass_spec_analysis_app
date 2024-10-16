@@ -1,6 +1,6 @@
 import sys
 import pandas as pd
-from PyQt5.QtWidgets import QApplication, QLabel, QWidget, QVBoxLayout, QPushButton, QFileDialog, QTextEdit
+from PyQt5.QtWidgets import QApplication, QLabel, QWidget, QVBoxLayout, QPushButton, QFileDialog
 
 class SimpleApp(QWidget):
     def __init__(self):
@@ -25,14 +25,9 @@ class SimpleApp(QWidget):
         self.confirm_button.clicked.connect(self.confirm_file_selection)
         layout.addWidget(self.confirm_button)
 
-        # Text area to display file contents or other messages
-        self.text_area = QTextEdit(self)
-        self.text_area.setReadOnly(True)  # Make the text area read-only
-        layout.addWidget(self.text_area)
-
         self.setLayout(layout)
         self.setWindowTitle("Simple PyQt Mass Spec App")
-        self.setGeometry(300, 300, 600, 400)
+        self.setGeometry(300, 300, 400, 200)
 
     def show_file_dialog(self):
         # Open file dialog to choose Excel file
@@ -52,17 +47,20 @@ class SimpleApp(QWidget):
             # Load the Excel file using Pandas
             df = pd.read_excel(self.selected_file)
 
-            # Display some file information in the text area
-            file_info = f"File confirmed: {self.selected_file}\n\n"
-            file_info += f"Sheet Name: {df.columns}\n\n"
-            file_info += f"Preview of the data:\n{df.head()}"
-            
-            # Display the file information and preview in the text area
-            self.text_area.setText(file_info)
+            # Print file information and data to the terminal
+            print(f"File confirmed: {self.selected_file}")
+            print(f"Column Names: {df.columns}")
+            print("Data Preview:")
+            print(df.head())
+
+            # Close the dialog after printing
+            self.close()
 
         except Exception as e:
-            # In case of an error, display the error message
-            self.text_area.setText(f"Error loading file: {e}")
+            # In case of an error, print the error message
+            print(f"Error loading file: {e}")
+            # Optionally, keep the app open or close it after the error
+            self.close()
 
 # Main loop
 if __name__ == '__main__':
