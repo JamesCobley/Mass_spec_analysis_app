@@ -48,7 +48,7 @@ class SimpleApp(QWidget):
     def show_file_dialog(self):
         # Open file dialog to choose Excel file
         file_dialog = QFileDialog()
-        file_path, _ = file_dialog.getOpenFileName(self, "Open DIA-NN Peptide Matrix", "", "Excel Files (*.xlsx)")
+        file_path, _ = file_dialog.getOpenFileName(self, "Open DIA-NN PG Matrix", "", "Excel Files (*.xlsx)")
         
         if file_path:
             # Update the label with selected file path
@@ -94,7 +94,7 @@ class SimpleApp(QWidget):
             exclusive_counts = {}
 
             # To keep track of which proteins are detected in how many samples
-            protein_detection_counts = pd.DataFrame(0, index=self.df['Protein.Group'], columns=selected_samples)
+            protein_detection_counts = pd.DataFrame(0, index=self.df['Unnamed: 1'], columns=selected_samples)
 
             for sample in selected_samples:
                 # Get rows where the sample column has non-null values
@@ -103,7 +103,7 @@ class SimpleApp(QWidget):
                 # Use a set to track unique protein groups
                 unique_protein_groups = set()
 
-                for protein_group in self.df.loc[sample_data, 'Protein.Group']:
+                for protein_group in self.df.loc[sample_data, 'Unnamed: 1']:
                     # Parse UniProt IDs from Protein.Group (split by semicolon if multiple)
                     uniprot_ids = protein_group.split(';')
                     unique_protein_groups.update(uniprot_ids)
