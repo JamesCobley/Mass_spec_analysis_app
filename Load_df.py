@@ -176,3 +176,4 @@ if __name__ == '__main__':
     ex = SimpleApp()
     ex.show()
     sys.exit(app.exec_())
+
