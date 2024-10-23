@@ -12,7 +12,7 @@ class SimpleApp(QWidget):
         layout = QVBoxLayout()
 
         # Label to display instructions or file path
-        self.label = QLabel("Upload a DIA-NN PG group Matrix (Excel file)", self)
+        self.label = QLabel("Upload a DIA-NN Peptide Matrix (Excel file)", self)
         layout.addWidget(self.label)
 
         # Upload button to select the file
@@ -48,7 +48,7 @@ class SimpleApp(QWidget):
     def show_file_dialog(self):
         # Open file dialog to choose Excel file
         file_dialog = QFileDialog()
-        file_path, _ = file_dialog.getOpenFileName(self, "Open DIA-NN PG Matrix", "", "Excel Files (*.xlsx)")
+        file_path, _ = file_dialog.getOpenFileName(self, "Open DIA-NN Peptide Matrix", "", "Excel Files (*.xlsx)")
         
         if file_path:
             # Update the label with selected file path
@@ -62,7 +62,10 @@ class SimpleApp(QWidget):
         try:
             self.df = pd.read_excel(self.selected_file)
 
-            # Show sample columns for selection
+            # Reference the first column (column A) as the protein group column, no matter its name
+            self.protein_group_column = self.df.iloc[:, 0]
+
+            # Show sample columns for selection (starting from column 10)
             self.sample_columns = self.df.columns[9:]  # Assuming sample columns start after the 9th column
             self.checkboxes = []
             for i, col in enumerate(self.sample_columns):
@@ -94,7 +97,7 @@ class SimpleApp(QWidget):
             exclusive_counts = {}
 
             # To keep track of which proteins are detected in how many samples
-            protein_detection_counts = pd.DataFrame(0, index=self.df['Unnamed: 1'], columns=selected_samples)
+            protein_detection_counts = pd.DataFrame(0, index=self.protein_group_column, columns=selected_samples)
 
             for sample in selected_samples:
                 # Get rows where the sample column has non-null values
@@ -103,8 +106,8 @@ class SimpleApp(QWidget):
                 # Use a set to track unique protein groups
                 unique_protein_groups = set()
 
-                for protein_group in self.df.loc[sample_data, 'Unnamed: 1']:
-                    # Parse UniProt IDs from Protein.Group (split by semicolon if multiple)
+                for protein_group in self.protein_group_column[sample_data]:
+                    # Parse UniProt IDs from the protein group column (split by semicolon if multiple)
                     uniprot_ids = protein_group.split(';')
                     unique_protein_groups.update(uniprot_ids)
 
@@ -147,15 +150,15 @@ class SimpleApp(QWidget):
         random_row = self.df.iloc[random_index]
 
         print("\nSanity Check - Random Peptide Row:")
-        print(random_row[['Protein.Group', *selected_samples]])
+        print(random_row[[self.protein_group_column.name, *selected_samples]])
 
         for sample in selected_samples:
             print(f"\nSanity Check for Sample: {sample}")
             sample_data = self.df[sample].notna()
             unique_proteins = set()
 
-            for protein_group in self.df.loc[sample_data, 'Protein.Group']:
-                # Parse UniProt IDs from Protein.Group (split by semicolon if multiple)
+            for protein_group in self.protein_group_column[sample_data]:
+                # Parse UniProt IDs from the protein group column (split by semicolon if multiple)
                 uniprot_ids = protein_group.split(';')
                 unique_proteins.update(uniprot_ids)
 
@@ -173,4 +176,3 @@ if __name__ == '__main__':
     ex = SimpleApp()
     ex.show()
     sys.exit(app.exec_())
-
