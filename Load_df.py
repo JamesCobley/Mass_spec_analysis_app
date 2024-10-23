@@ -66,7 +66,7 @@ class SimpleApp(QWidget):
             self.protein_group_column = self.df.iloc[:, 0]
 
             # Show sample columns for selection (starting from column 10)
-            self.sample_columns = self.df.columns[9:]  # Assuming sample columns start after the 9th column
+            self.sample_columns = self.df.columns[9:]  # Adjust if sample columns start after a different column
             self.checkboxes = []
             for i, col in enumerate(self.sample_columns):
                 checkbox = QCheckBox(col)
@@ -176,4 +176,3 @@ if __name__ == '__main__':
     ex = SimpleApp()
     ex.show()
     sys.exit(app.exec_())
-
